@@ -1,20 +1,16 @@
 # http://codepad-demo.d250.hu/p/bpybgebxl.py
 # More info about this pad: http://blender-brussels.github.io/articles/collaborative-python-scripting/
-
 # The idea is to fetch this script and run it through Blender regularly. An experiment during #bpybgebxl.
 # http://blender-brussels.github.io
-
 # Hello visitors. Please add your name and say 'Hi!' in the chat ------------------------------------------------>
-
+# what you might expect out of this script: https://pbs.twimg.com/media/CBMggbjUUAAa0eR.png:large
 import datetime
 import bpy
 import math
 import mathutils
 import random # https://docs.python.org/2/library/random.html
-
 matUID = 0
 waveUID = 0
-
 # utils
 def newMaterial():
     global matUID
@@ -23,7 +19,6 @@ def newMaterial():
     bpy.data.materials.new( newmatname )
     matUID += 1
     return bpy.data.materials[ newmatname ]
-
 def applyColRotSize( color, rot, size):
     # linking the new material to object
     bpy.context.object.active_material = newMaterial()
@@ -33,7 +28,6 @@ def applyColRotSize( color, rot, size):
     bpy.ops.transform.rotate( value = rot[1], axis=(0,1,0) )
     bpy.ops.transform.rotate( value = rot[2], axis=(0,0,1) )
     bpy.ops.transform.resize( value = size )
-
 # creation functions
 def addText( text = "bravo!" , pos=(0,0,0), size=(1,1,1), color=(1,1,1), rot=(0,0,0) ):
     '''
@@ -55,12 +49,10 @@ def addText( text = "bravo!" , pos=(0,0,0), size=(1,1,1), color=(1,1,1), rot=(0,
     bpy.context.object.data.extrude = 0.1
     bpy.ops.transform.translate( value = pos )
     applyColRotSize(color, rot, size)
-
 def addSphere( pos=(0,0,0), size=(1,1,1), color=(1,1,1), rot=(0,0,0) ):
     bpy.ops.mesh.primitive_ico_sphere_add( subdivisions = 3, location= pos )
     bpy.ops.object.shade_smooth()
     applyColRotSize(color, rot, size)
-
 # ref: http://wiki.theprovingground.org/blender-py-mathmesh
 def mathmesh( definition=(100,100), freq=1, amp=1, scale=1, pos=(0,0,0), size=(1,1,1), color=(1,1,1), rot=(0,0,0) ):
         global waveUID
@@ -122,7 +114,6 @@ bpy.context.scene.world.horizon_color = ( random.random(), random.random(), rand
 bpy.context.scene.world.zenith_color = ( random.random(), random.random(), random.random() )
 bpy.context.scene.objects['Cube'].select = True
 bpy.ops.object.delete()
-
 addText( 'YO!', pos=(0,-0.5,0) )
 for i in range(300):
     newSize = random.uniform(0.5,3)
@@ -131,7 +122,6 @@ for i in range(300):
             size = (newSize, newSize, newSize),
             color = (random.random(),random.random(),random.random(), 1),
             rot = (random.uniform(-1,1), random.uniform(-1,1), random.uniform(-1,1)) ) 
-
 for i in range(100):
     now = datetime.datetime.utcnow()
     angl = i / 100 * ( math.pi * 2 )
@@ -140,7 +130,6 @@ for i in range(100):
         pos = ( math.cos( angl ) * 3, math.sin( angl ) * 3, math.tan( angl * float( now.strftime('%M') ) / 60 ) ),
         size = ( s,s,s ),
         color= ( abs(math.cos(angl)), abs(math.sin( angl)) , 0 ) )
-
 for i in range( 20 ):
     mathmesh(
         amp= 0.5 + i * 0.1,
@@ -150,39 +139,35 @@ for i in range( 20 ):
         rot=( 0,0,0.01 * i ),
         color = (random.random(),random.random(),random.random())
         )
-
 bpy.context.scene.objects['Lamp'].data.type = 'SUN'
 bpy.context.scene.objects['Lamp'].data.energy = 0
-
 # adapting the output path - one file per second, max
 now = datetime.datetime.utcnow()
 bpy.context.scene.render.filepath = '/tmp/bgebpybxl_' + now.strftime('%Y.%m.%d-%H.%M.%S') + '-'
-
 for i in range( 17 ):
     bpy.ops.object.lamp_add( type='POINT' )
     bpy.context.object.data.energy = 0.7
     bpy.context.object.data.color = ( random.uniform(0.5, 1), random.uniform(0.5, 1), random.uniform(0.5, 1))
     bpy.context.object.data.shadow_method = 'RAY_SHADOW'
     bpy.ops.transform.translate( value = (random.uniform(-5, 5), random.uniform(-5,5), random.uniform(-5, 5) ) )
-
 bpy.context.scene.world.mist_settings.use_mist = True
 bpy.context.scene.world.mist_settings.depth = 15
 bpy.context.scene.world.mist_settings.start = 3
-
 '''
 #!/bin/sh    
-
 # A shell script to download the python script and run it in Blender
 curl http://codepad-demo.d250.hu/p/bpybgebxl.py/export/txt -o bpybgebxl.py
 ./blender --verbose --background --factory-startup --render-output // --python bpybgebxl.py --render-frame 1
 '''
-
+'''
+# To convert the series of renders in a gif animation
+convert -delay 50 -loop 0 -resize 50%  bgebpybxl_2015.03.28-*.png bpybgebxl.gif
+'''
 '''
 # Continuous render
 # =================
 # Maybe not safe as you are running Python on your machine without knowing what's in the code. 
 # And Python can do a lot of stuff...
-
 #!/bin/sh
 COUNTER=0
 while [  $COUNTER -lt 100 ]; do
@@ -194,7 +179,5 @@ while [  $COUNTER -lt 100 ]; do
     sleep 20
 done
 '''
-
 # APPLY SCRIPT BEFORE RENDERING!
-
 
