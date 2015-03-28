@@ -1,4 +1,4 @@
-# collaborative-python-scripting
+# Collaborative Python Scripting
 
 **Results from the Blender-Brussels workshop of 28th of March 2015.**
 
